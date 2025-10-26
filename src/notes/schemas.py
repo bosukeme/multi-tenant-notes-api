@@ -1,13 +1,12 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from bson import ObjectId
-from beanie import Link
 
 from src.organizations.schemas import OrganizationMiniSchema
-from src.organizations.models import Organization
-
 from src.users.schemas import UserMiniSchema
-from src.users.models import User
+from src.utils.link_resolver import BaseService
+
+base_svc = BaseService()
 
 
 class NoteCreateSchema(BaseModel):
@@ -40,38 +39,24 @@ class NoteReadSchema(BaseModel):
             data["_id"] = str(data["_id"])
 
         org_attr = getattr(note, "org", None)
+        org_doc = await base_svc.resolve_link(org_attr)
 
-        if org_attr:
-            if isinstance(org_attr, Organization):
-                org_doc = org_attr
-            elif isinstance(org_attr, Link):
-                org_doc = await org_attr.fetch()
-            else:
-                org_doc = None
-
-            if org_doc:
-                data["org"] = OrganizationMiniSchema(
-                    id=str(org_doc.id),
-                    name=org_doc.name,
-                    description=org_doc.description
-                )
+        if org_doc:
+            data["org"] = OrganizationMiniSchema(
+                id=str(org_doc.id),
+                name=org_doc.name,
+                description=org_doc.description
+            )
 
         author_attr = getattr(note, "author", None)
+        author_doc = await base_svc.resolve_link(author_attr)
 
-        if author_attr:
-            if isinstance(author_attr, User):
-                author_doc = author_attr
-            elif isinstance(author_attr, Link):
-                author_doc = await author_attr.fetch()
-            else:
-                author_doc = None
-
-            if author_doc:
-                data["author"] = UserMiniSchema(
-                    id=str(author_doc.id),
-                    email=author_doc.email,
-                    full_name=author_doc.full_name,
-                    role=author_doc.role,
-                )
+        if author_doc:
+            data["author"] = UserMiniSchema(
+                id=str(author_doc.id),
+                email=author_doc.email,
+                full_name=author_doc.full_name,
+                role=author_doc.role,
+            )
 
         return cls(**data)

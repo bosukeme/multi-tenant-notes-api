@@ -1,9 +1,11 @@
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from bson import ObjectId
-from beanie import Link
+
 from src.organizations.schemas import OrganizationMiniSchema
-from src.organizations.models import Organization
+from src.utils.link_resolver import BaseService
+
+base_svc = BaseService()
 
 
 class UserCreateSchema(BaseModel):
@@ -37,20 +39,14 @@ class UserReadSchema(BaseModel):
             data["_id"] = str(data["_id"])
 
         org_attr = getattr(user, "org", None)
-        if org_attr:
-            if isinstance(org_attr, Organization):
-                org_doc = org_attr
-            elif isinstance(org_attr, Link):
-                org_doc = await org_attr.fetch()
-            else:
-                org_doc = None
+        org_doc = await base_svc.resolve_link(org_attr)
 
-            if org_doc:
-                data["org"] = OrganizationMiniSchema(
-                    id=str(org_doc.id),
-                    name=org_doc.name,
-                    description=org_doc.description
-                )
+        if org_doc:
+            data["org"] = OrganizationMiniSchema(
+                id=str(org_doc.id),
+                name=org_doc.name,
+                description=org_doc.description
+            )
 
         return cls(**data)
 
