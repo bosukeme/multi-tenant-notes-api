@@ -8,10 +8,12 @@ from src.organizations.models import Organization
 class UserService:
 
     async def get_organization(self, org_id):
+        org_id = PydanticObjectId(org_id)
         org = await Organization.get(org_id)
         if not org:
             raise HTTPException(
-                status_code=404, detail="Organization not found")
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Organization not found")
         return org
 
     async def create_user(self, org_id: PydanticObjectId,

@@ -4,12 +4,14 @@ from pydantic import BaseModel, Field, ConfigDict
 
 
 class OrganizationCreateSchema(BaseModel):
-    name: str = Field(..., example="ABC Org")
-    description: str | None = Field(None, example="The best Org.")
+    name: str = Field(..., json_schema_extra={"example": "ABC Org"})
+    description: str | None = Field(None, json_schema_extra={
+                                    "example": "The best Org."})
 
 
 class OrganizationReadSchema(BaseModel):
-    id: str = Field(alias="_id", example="652c1e6fcf9b7f001f3f5a2b")
+    id: str = Field(alias="_id", json_schema_extra={
+                    "example": "652c1e6fcf9b7f001f3f5a2b"})
     name: str
     description: str | None = None
     created_at: datetime

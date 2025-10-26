@@ -61,7 +61,9 @@ class NoteService(BaseService):
         note_org = await self.resolve_link(note.org)
 
         if str(user_org.id) != str(note_org.id):
-            raise HTTPException(status_code=403, detail="Unauthorized access")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Unauthorized access")
 
         await note.delete()
         return {"message": "Note deleted successfully"}

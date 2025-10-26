@@ -15,7 +15,8 @@ class UserCreateSchema(BaseModel):
 
 
 class UserReadSchema(BaseModel):
-    id: str = Field(alias="_id", example="652c1e6fcf9b7f001f3f5a2b")
+    id: str = Field(alias="_id", json_schema_extra={
+                    "example": "652c1e6fcf9b7f001f3f5a2b"})
     email: EmailStr
     full_name: str
     role: str

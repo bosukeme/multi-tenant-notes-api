@@ -15,7 +15,8 @@ class NoteCreateSchema(BaseModel):
 
 
 class NoteReadSchema(BaseModel):
-    id: str = Field(alias="_id", example="652c1e6fcf9b7f001f3f5a2b")
+    id: str = Field(alias="_id", json_schema_extra={
+                    "example": "652c1e6fcf9b7f001f3f5a2b"})
     title: str
     content: str
     created_at: datetime
