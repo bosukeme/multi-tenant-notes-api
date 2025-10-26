@@ -11,6 +11,7 @@ from src.notes.models import Note
 from src.organizations.routes import org_router
 from src.users.routes import user_router
 from src.notes.routes import note_router
+from src.core.config import Config
 
 
 @pytest.fixture(scope="session")
@@ -28,7 +29,7 @@ async def app():
     app.include_router(note_router, prefix="/notes",
                        tags=["notes"])
 
-    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    client = AsyncIOMotorClient(Config.MONGO_URI)
     db = client["test_db"]
 
     await init_beanie(database=db, document_models=[Organization, User, Note])
@@ -36,6 +37,7 @@ async def app():
 
     await db.drop_collection("organizations")
     await db.drop_collection("users")
+    await db.drop_collection("notes")
     client.close()
 
 
@@ -44,6 +46,8 @@ async def clear_db():
 
     await Organization.delete_all()
     await User.delete_all()
+    await Note.delete_all()
+
     yield
 
 

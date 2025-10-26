@@ -1,0 +1,12 @@
+services:
+
+  app:
+    build: .
+    container_name: multi_tenant_notes_app
+    restart: unless-stopped
+
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    
