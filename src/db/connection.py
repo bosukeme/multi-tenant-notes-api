@@ -12,9 +12,10 @@ async def init_db(app: FastAPI) -> None:
 
     from src.organizations.models import Organization
     from src.users.models import User
+    from src.notes.models import Note
 
-    # docs = [Organization, User, Note]
-    docs = [Organization, User]
+    docs = [Organization, User, Note]
+
     await init_beanie(database=db, document_models=docs)
 
     app.state.mongo_client = client

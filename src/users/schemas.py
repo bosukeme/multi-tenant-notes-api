@@ -53,3 +53,16 @@ class UserReadSchema(BaseModel):
                 )
 
         return cls(**data)
+
+
+class UserMiniSchema(BaseModel):
+    id: str = Field(alias="_id")
+    email: EmailStr
+    full_name: str
+    role: str
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
