@@ -31,3 +31,15 @@ class OrganizationReadSchema(BaseModel):
         if "_id" in data:
             data["_id"] = str(data["_id"])
         return cls(**data)
+
+
+class OrganizationMiniSchema(BaseModel):
+    id: str = Field(alias="_id")
+    name: str
+    description: str | None = None
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={ObjectId: str},
+    )
