@@ -1,0 +1,27 @@
+[flake8]
+max-line-length = 100
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    *.pyc,
+    *.egg-info,
+    .eggs,
+    .tox,
+    .venv,
+    venv,
+    .env,
+    env,
+    tt,
+    migrations
+
+ignore =
+    E203,
+    W503,
+    F401,
+
+max-complexity = 10
+
+statistics = True
+count = True

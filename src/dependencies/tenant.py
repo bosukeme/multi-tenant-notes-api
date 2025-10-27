@@ -6,7 +6,7 @@ from beanie import PydanticObjectId
 from src.utils.link_resolver import BaseService
 from src.middlewares.errors import (
     MissingHeaders, OrganizationOrUserNotFound, UserDoesNotBelongToOrganization
-    )
+)
 
 
 class TenantContext(BaseService):
