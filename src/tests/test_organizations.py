@@ -20,7 +20,7 @@ async def test_create_duplicate_organization(client: AsyncClient):
     await client.post("/organizations/", json=payload)
     response = await client.post("/organizations/", json=payload)
 
-    assert response.status_code == 400
+    assert response.status_code == 409
     assert "already exists" in response.text
 
 

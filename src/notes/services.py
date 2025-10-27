@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from beanie import PydanticObjectId
 
 from src.utils.link_resolver import BaseService
@@ -6,6 +5,7 @@ from src.notes.models import Note
 from src.notes.schemas import NoteCreateSchema, NoteReadSchema
 from src.organizations.models import Organization
 from src.users.models import User
+from src.middlewares.errors import NoteNotFound, UnauthorizedAccess
 
 
 class NoteService(BaseService):
@@ -13,9 +13,7 @@ class NoteService(BaseService):
     async def find_note(self, note_id):
         note = await Note.get(note_id)
         if not note:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Note not found")
+            raise NoteNotFound()
         return note
 
     async def create_note(self,
@@ -44,9 +42,7 @@ class NoteService(BaseService):
         note_org = await self.resolve_link(note.org)
 
         if str(note_org.id) != str(org.id) or str(user_org.id) != str(org.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Unauthorized access")
+            raise UnauthorizedAccess()
 
         return await NoteReadSchema.from_mongo(note)
 
@@ -61,9 +57,7 @@ class NoteService(BaseService):
         note_org = await self.resolve_link(note.org)
 
         if str(user_org.id) != str(note_org.id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Unauthorized access")
+            raise UnauthorizedAccess()
 
         await note.delete()
         return {"message": "Note deleted successfully"}

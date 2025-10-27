@@ -43,8 +43,7 @@ async def test_create_duplicate_user(client: AsyncClient):
 
     response = await client.post(f"/organizations/{org_id}/users/",
                                  json=user_payload)
-
-    assert response.status_code == 400
+    assert response.status_code == 409
     assert "already exists" in response.text
 
 

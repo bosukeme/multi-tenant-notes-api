@@ -13,9 +13,12 @@ from src.middlewares.rate_limit import apply_rate_limit_to_router
 async def life_span(app: FastAPI):
     print("Server is starting...")
     client = await init_db(app)
-    yield
-    print("Server has stopped!!!")
-    client.close()
+    try:
+        yield
+    finally:
+        print("Server has stopped!!!")
+        if client:
+            client.close()
 
 
 def register_routers(app: FastAPI) -> None:
@@ -37,12 +40,14 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title="Multi-tenant Notes API",
-        lifespan=life_span
+        lifespan=life_span,
+        docs_url="/docs",
+        redoc_url="/redoc",
     )
 
     @app.get("/")
-    def home():
-        return "Welcome to the Multi Tenant Notes API"
+    async def home():
+        return {"message": "Welcome to the Multi Tenant Notes API"}
 
     register_middleware(app)
     register_routers(app)

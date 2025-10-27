@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from src.middlewares import register_middleware
 from src.organizations.models import Organization
 from src.users.models import User
 from src.notes.models import Note
@@ -22,6 +23,9 @@ def anyio_backend():
 @pytest.fixture(scope="session")
 async def app():
     app = FastAPI()
+
+    register_middleware(app)
+
     app.include_router(org_router, prefix="/organizations",
                        tags=["Organizations"])
     app.include_router(user_router, prefix="/organizations/{org_id}/users",

@@ -1,8 +1,9 @@
-from fastapi import HTTPException, status
 from beanie import PydanticObjectId
 from src.users.models import User
 from src.users.schemas import UserCreateSchema, UserReadSchema
 from src.organizations.models import Organization
+
+from src.middlewares.errors import OrganizationNotFound, UserAlreadyExists
 
 
 class UserService:
@@ -11,9 +12,7 @@ class UserService:
         org_id = PydanticObjectId(org_id)
         org = await Organization.get(org_id)
         if not org:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Organization not found")
+            raise OrganizationNotFound()
         return org
 
     async def create_user(self, org_id: PydanticObjectId,
@@ -26,11 +25,7 @@ class UserService:
             "org.$id": org.id
         })
         if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(f"User with email '{data.email}' "
-                        "already exists in this organization.")
-            )
+            raise UserAlreadyExists()
 
         user = User(**data.model_dump(), org=org)
         await user.insert()

@@ -1,8 +1,8 @@
-from fastapi import HTTPException, status
 from src.organizations.models import Organization
 from src.organizations.schemas import (
     OrganizationCreateSchema, OrganizationReadSchema
 )
+from src.middlewares.errors import OrganizationAlreadyExists
 
 
 class OrganizationService:
@@ -10,10 +10,7 @@ class OrganizationService:
     async def get_organization_by_name(self, name: str) -> Organization:
         existing = await Organization.find_one(Organization.name == name)
         if existing:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Organization '{name}' already exists."
-            )
+            raise OrganizationAlreadyExists()
         return None
 
     async def create_organization(

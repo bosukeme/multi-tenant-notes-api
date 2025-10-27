@@ -188,5 +188,5 @@ async def test_cross_organization_access_denied(client: AsyncClient):
     }
 
     cross_res = await client.get(f"/notes/{note_id}", headers=headers_b)
-    assert cross_res.status_code == 403
+    assert cross_res.status_code == 401
     assert "Unauthorized access" in cross_res.text
